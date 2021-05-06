@@ -1,0 +1,5 @@
+Feature: Feature example
+Scenario: Scenario example
+Tags: Tag1, Tag2
+
+Given today is monday
