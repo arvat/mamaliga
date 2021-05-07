@@ -1,5 +1,5 @@
 package ketroy.model;
 
-public class Step {
+public class Context {
 
 }

@@ -11,9 +11,10 @@ import org.apache.commons.io.filefilter.TrueFileFilter;
 
 public class FileService {
 
-	public static File findFileByName(String filename) {
+	public static List<String> findFileByName(String filename) {
 		Collection<File> files = FileUtils.listFiles(new File("./"), TrueFileFilter.TRUE, TrueFileFilter.TRUE);
-		return files.stream().filter(f -> f.isFile() && f.getName().equals(filename)).findFirst().orElse(null);
+		File file = files.stream().filter(f -> f.isFile() && f.getName().equals(filename)).findFirst().orElse(null);
+		return readLines(file);
 	}
 	
 	public static List<String> readLines(File file) {
