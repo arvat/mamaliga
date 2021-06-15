@@ -1,16 +1,20 @@
 package ketroy;
 
-import java.util.List;
+import java.io.IOException;
 
-import ketroy.service.BddService;
-import ketroy.service.FileService;
+import ketroy.thread.RunnerQueue;
 
 public class KetroyApplication {
 
 	public static void main(String[] args) {
-		
-		List<String> lines = FileService.findFileByName("generic.txt");
-		
-		BddService.triggerRunnerQueue(lines);
+		System.setProperty("webdriver.gecko.driver", "./drivers/geckodriver.exe");
+		try {
+			RunnerQueue runnerQueue1 = new RunnerQueue("");
+			RunnerQueue runnerQueue2 = new RunnerQueue("");
+			runnerQueue1.start();
+			runnerQueue2.start();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

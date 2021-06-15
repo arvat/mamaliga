@@ -1,2 +1,0 @@
-Given today is monday
-Then what day is today
