@@ -14,12 +14,10 @@ import ketroy.model.Context;
 public class RunnerQueue extends Thread {
 
     private Context context;
-    private String host;
     private Random rand = new Random();
     
 	public RunnerQueue(List<String> newPaths, List<String> oldPaths) throws IOException {
 		context = new Context(newPaths, oldPaths);
-		host = new URL(newPaths.get(0)).getHost();
     }
     
     public void run() {
@@ -28,13 +26,16 @@ public class RunnerQueue extends Thread {
         	List<WebElement> webElements = context.getDriver().findElements(By.xpath("//body//a"));
         	if (webElements != null && !webElements.isEmpty()) {
         		for (WebElement webElement : webElements) {
-        			if (isUniqueElement(webElement)) {
-		        		context.getNewPaths().add(webElement.getAttribute("href"));
+        			String path = webElement.getAttribute("href");
+        			if (isUniqueElement(path)) {
+		        		context.getNewPaths().add(path);
 		        	}
         		}
         	}
         	
-        	getNextUrl();
+        	
+        	
+        	getRandomUrl();
         }
 
         if (context.getDriver() != null) {
@@ -42,21 +43,24 @@ public class RunnerQueue extends Thread {
         }
     }
 
-    private boolean isUniqueElement(WebElement webElement) {
+    private boolean isUniqueElement(String path) {
 		try {
-			String path = webElement.getAttribute("href");
 			if (path != null) {
-				String pathHost = new URL(path).getHost();
-				return pathHost != null && pathHost.equals(host) && !context.getNewPaths().contains(path) && !context.getOldPaths().contains(path);
+				URL pathUrl = new URL(path);
+				if (pathUrl != null) {
+					String pathHost = pathUrl.getHost();
+					return pathHost != null && pathHost.equals(context.getHost())
+						&& !context.getNewPaths().contains(path) && !context.getOldPaths().contains(path);
+				}
 			}
 		} catch (MalformedURLException e) {
-			e.printStackTrace();
+			
 		}
     	
 		return false;
     }
     
-	private void getNextUrl() {
+	private void getRandomUrl() {
 		
 		if (!context.getOldPaths().contains(context.getUrl())) {
 			context.getOldPaths().add(context.getUrl());

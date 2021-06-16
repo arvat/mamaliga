@@ -1,5 +1,7 @@
 package ketroy.model;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,19 +11,33 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 public class Context {
 
 	private boolean running = true;
-	
 	private WebDriver driver = new FirefoxDriver();
-	
 	private List<String> oldPaths = new ArrayList<>();
-	
 	private List<String> newPaths = new ArrayList<>();
-	
     private String url;
-
+    private String host;
+    
 	public Context(List<String> newPaths, List<String> oldPaths) {
-		url = newPaths.get(0);
 		this.newPaths = newPaths;
 		this.oldPaths = oldPaths;
+		
+		if (newPaths != null && !newPaths.isEmpty()) {
+			try {
+				host = new URL(newPaths.get(0)).getHost();
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			}
+			
+			url = newPaths.get(0);
+		}
+	}
+
+	public String getHost() {
+		return host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
 	}
 
 	public boolean isRunning() {
