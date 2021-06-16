@@ -1,11 +1,14 @@
 package ketroy.thread;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -15,7 +18,8 @@ public class RunnerQueue extends Thread {
 
     private Context context;
     private Random rand = new Random();
-    
+	private File file = new File("example.txt");
+	
 	public RunnerQueue(List<String> newPaths, List<String> oldPaths) throws IOException {
 		context = new Context(newPaths, oldPaths);
     }
@@ -33,7 +37,23 @@ public class RunnerQueue extends Thread {
         		}
         	}
         	
-        	
+            try {
+            	webElements = context.getDriver().findElements(By.xpath("//video"));
+            	if (webElements != null && !webElements.isEmpty()) {
+            		WebElement h1 = context.getDriver().findElement(By.xpath("//h1"));
+            		List<WebElement> years = context.getDriver().findElements(By.xpath("//span[@itemprop='copyrightYear']"));
+            		String year = null;
+            		if (years != null && !years.isEmpty()) {
+            			year = years.get(0).getText();
+            		}
+            		FileUtils.writeStringToFile(file, context.getDriver().getCurrentUrl()
+            				+ "|" + year
+            				+ "|" + h1.getText()
+            				+ "|" + webElements.get(0).getAttribute("src") + "\r\n", StandardCharsets.UTF_8, true);
+            	}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
         	
         	getRandomUrl();
         }

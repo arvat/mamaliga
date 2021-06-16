@@ -15,7 +15,7 @@ public class KetroyApplication {
 		List<String> newPaths = Collections.synchronizedList(new ArrayList<String>());
 		List<String> oldPaths = Collections.synchronizedList(new ArrayList<String>());
 		
-		newPaths.add("https://www.zap.md/");
+		newPaths.add("https://w124.zona.plus/");
 		try {
 			for(int i=0; i < 2; i++){
 				RunnerQueue runnerQueue = new RunnerQueue(newPaths, oldPaths);
