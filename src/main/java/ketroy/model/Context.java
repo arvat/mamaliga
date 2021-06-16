@@ -12,13 +12,16 @@ public class Context {
 	
 	private WebDriver driver = new FirefoxDriver();
 	
-	private List<String> paths = new ArrayList<>();
+	private List<String> oldPaths = new ArrayList<>();
+	
+	private List<String> newPaths = new ArrayList<>();
 	
     private String url;
 
-	public Context(String url) {
-		this.url = url;
-		this.paths.add(url);
+	public Context(List<String> newPaths, List<String> oldPaths) {
+		url = newPaths.get(0);
+		this.newPaths = newPaths;
+		this.oldPaths = oldPaths;
 	}
 
 	public boolean isRunning() {
@@ -37,19 +40,27 @@ public class Context {
 		this.driver = driver;
 	}
 
-	public List<String> getPaths() {
-		return paths;
-	}
-
-	public void setPaths(List<String> paths) {
-		this.paths = paths;
-	}
-
 	public String getUrl() {
 		return url;
 	}
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	public List<String> getOldPaths() {
+		return oldPaths;
+	}
+
+	public void setOldPaths(List<String> oldPaths) {
+		this.oldPaths = oldPaths;
+	}
+
+	public List<String> getNewPaths() {
+		return newPaths;
+	}
+
+	public void setNewPaths(List<String> newPaths) {
+		this.newPaths = newPaths;
 	}
 }

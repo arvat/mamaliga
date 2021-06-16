@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.Random;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -14,30 +15,22 @@ public class RunnerQueue extends Thread {
 
     private Context context;
     private String host;
+    private Random rand = new Random();
     
-	public RunnerQueue(String url) throws IOException {
-		context = new Context(url);
-		host = new URL(url).getHost();
+	public RunnerQueue(List<String> newPaths, List<String> oldPaths) throws IOException {
+		context = new Context(newPaths, oldPaths);
+		host = new URL(newPaths.get(0)).getHost();
     }
     
     public void run() {
         while (context.isRunning()) {
         	context.getDriver().get(context.getUrl());
-        	By by = By.xpath("//body//a");
-        	List<WebElement> webElements = context.getDriver().findElements(by);
+        	List<WebElement> webElements = context.getDriver().findElements(By.xpath("//body//a"));
         	if (webElements != null && !webElements.isEmpty()) {
         		for (WebElement webElement : webElements) {
-        			String path = webElement.getAttribute("href");
-        			try {
-        				if (path != null) {
-							String pathHost = new URL(path).getHost();
-		        			if (pathHost != null && pathHost.equals(host) && !context.getPaths().contains(path)) {
-		        				context.getPaths().add(path);
-		        			}
-        				}
-					} catch (MalformedURLException e) {
-						e.printStackTrace();
-					}
+        			if (isUniqueElement(webElement)) {
+		        		context.getNewPaths().add(webElement.getAttribute("href"));
+		        	}
         		}
         	}
         	
@@ -49,10 +42,28 @@ public class RunnerQueue extends Thread {
         }
     }
 
+    private boolean isUniqueElement(WebElement webElement) {
+		try {
+			String path = webElement.getAttribute("href");
+			if (path != null) {
+				String pathHost = new URL(path).getHost();
+				return pathHost != null && pathHost.equals(host) && !context.getNewPaths().contains(path) && !context.getOldPaths().contains(path);
+			}
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+    	
+		return false;
+    }
+    
 	private void getNextUrl() {
-		int index = context.getPaths().indexOf(context.getUrl());
-    	if (context.getPaths().size() > index) {
-    		context.setUrl(context.getPaths().get(++index));
+		
+		if (!context.getOldPaths().contains(context.getUrl())) {
+			context.getOldPaths().add(context.getUrl());
+		}
+		if (!context.getNewPaths().isEmpty()) {
+			context.setUrl(context.getNewPaths().get(rand.nextInt(context.getNewPaths().size())));
+			context.getNewPaths().remove(context.getUrl());
     	} else {
     		context.setRunning(false);
     	}
