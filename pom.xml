@@ -4,9 +4,9 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>arvat</groupId>
-	<artifactId>mamaliga</artifactId>
+	<artifactId>ketroy</artifactId>
 	<version>0.0.1</version>
-	<name>Mamaliga</name>
+	<name>Ketroy</name>
 	<description>Webscrapping tool</description>
 
 	<properties>
