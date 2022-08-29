@@ -1,13 +1,18 @@
 package ketroy.thread;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+
+import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter;
 
 import ketroy.model.Context;
 
@@ -16,6 +21,8 @@ public class RunnerQueue extends Thread {
     private Context context;
     private Random rand = new Random();
 	
+    private static final String STORAGE_PATH = "./static/";
+	
 	public RunnerQueue(List<String> newPaths, List<String> oldPaths) throws IOException {
 		context = new Context(newPaths, oldPaths);
     }
@@ -23,6 +30,7 @@ public class RunnerQueue extends Thread {
     public void run() {
         while (context.isRunning()) {
         	getPage();
+        	savePage();
         	saveUniqueLinks();
         	getNextUrl();
         }
@@ -50,6 +58,18 @@ public class RunnerQueue extends Thread {
     
     private void getPage() {
     	context.getDriver().get(context.getUrl());
+    }
+    
+    private void savePage() {
+    	URL url;
+		try {
+			url = new URL(context.getUrl());
+	    	String md = FlexmarkHtmlConverter.builder().build().convert(context.getDriver().getPageSource());
+	    	File file = new File(STORAGE_PATH + url.getHost() + "/" + url.getPath() + "/index.txt");
+			FileUtils.writeStringToFile(file, md, StandardCharsets.UTF_8);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
     }
     
     private boolean isUniqueElement(String path) {
